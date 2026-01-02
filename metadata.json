@@ -1,5 +1,5 @@
 {
-  "name": "保全排班大師 uni 2",
-  "description": "A smart scheduling application for security supervisors to manage sites, staff, mobile relief, and monthly rosters with AI optimization.",
+  "name": "GuardShift AI - 專業保全自動排班系統",
+  "description": "提供保全主管使用的智慧排班工具，支援案場管理、機動人員配置、自動化排班與 AI 最佳化功能。",
   "requestFramePermissions": []
 }
