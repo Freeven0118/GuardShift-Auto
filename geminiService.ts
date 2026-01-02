@@ -1,20 +1,14 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { ScheduleState, ShiftType, StaffRole, Staff, Site, ScheduleAssignment } from "../types";
-import { getMonthDays, getRequiredLeaveDays } from "../utils/dateUtils";
+import { ScheduleState, ShiftType, StaffRole, Staff, Site, ScheduleAssignment } from "./types";
+import { getMonthDays, getRequiredLeaveDays } from "./utils/dateUtils";
 
 export const optimizeScheduleWithAI = async (
   currentState: ScheduleState,
   draftAssignments: ScheduleAssignment[]
 ): Promise<ScheduleAssignment[]> => {
-  // 嚴格從 process.env.API_KEY 獲取密鑰
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-      console.warn("API_KEY is not set, skipping AI optimization.");
-      return draftAssignments;
-  }
-
-  const ai = new GoogleGenAI({ apiKey });
+  // Use process.env.API_KEY exclusively as per guidelines.
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
 
   const days = getMonthDays(currentState.year, currentState.month);
   const requiredLeave = getRequiredLeaveDays(currentState.year, currentState.month);
@@ -75,15 +69,14 @@ export const optimizeScheduleWithAI = async (
               siteId: { type: Type.STRING },
               shift: { type: Type.STRING },
               staffId: { type: Type.STRING }
-            },
-            required: ["dateStr", "siteId", "shift", "staffId"]
+            }
           }
         }
       }
     });
 
     const jsonText = response.text;
-    if (!jsonText) return draftAssignments;
+    if (!jsonText) throw new Error("No response from AI");
     
     const parsed = JSON.parse(jsonText);
     
@@ -109,9 +102,9 @@ export const optimizeScheduleWithAI = async (
             return { dateStr: item.dateStr, siteId: item.siteId, shift, staffId: item.staffId };
         }).filter((item: any) => item !== null);
     }
-    return draftAssignments;
+    return parsed;
   } catch (error) {
     console.error("AI Optimization Error:", error);
-    return draftAssignments;
+    throw error;
   }
 };

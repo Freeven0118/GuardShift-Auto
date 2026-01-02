@@ -1,3 +1,4 @@
+
 export enum ShiftType {
   Day = 'Day',
   Night = 'Night',
@@ -5,44 +6,49 @@ export enum ShiftType {
 
 export enum StaffRole {
   Regular = 'Regular',
-  Mobile = 'Mobile', // 機動
+  Mobile = 'Mobile',
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  picture?: string;
 }
 
 export interface Staff {
   id: string;
   name: string;
   role: StaffRole;
-  // If Regular, they belong to a site and a specific shift type by default
   defaultSiteId?: string;
   defaultShift?: ShiftType; 
-  
-  // Mobile specific settings
-  allowedShifts?: ShiftType[]; // Changed to array for multi-select
-  allowedSiteIds?: string[]; // IDs of sites they can cover. If undefined/empty, assumed all.
+  allowedShifts?: ShiftType[];
+  allowedSiteIds?: string[];
 }
 
 export interface Site {
   id: string;
   name: string;
-  requiredStaffPerShift: number; // Usually 1 for simple cases
+  requiredStaffPerShift: number;
 }
 
 export interface LeaveRequest {
   staffId: string;
-  dateStr: string; // YYYY-MM-DD
-  isDesignated: boolean; // True if user specifically requested this
+  dateStr: string;
+  isDesignated: boolean;
 }
 
 export interface ScheduleAssignment {
   dateStr: string;
   siteId: string;
   shift: ShiftType;
-  staffId: string | null; // null means unfilled
+  staffId: string | null;
 }
 
 export interface ScheduleState {
+  userId?: string; // Ownership
   year: number;
-  month: number; // 0-11
+  month: number;
   sites: Site[];
   staff: Staff[];
   leaveRequests: LeaveRequest[];
