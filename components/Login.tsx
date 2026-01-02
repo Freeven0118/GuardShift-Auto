@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { ShieldCheck, MessageCircle, ArrowRight, AlertCircle, Chrome, Globe, Lock, Info, Copy, ExternalLink } from 'lucide-react';
+import { ShieldCheck, MessageCircle, ArrowRight, AlertCircle, Chrome, Globe, Lock, Info, Copy, ExternalLink, Server } from 'lucide-react';
 import { User } from '../types';
 
 interface LoginProps {
@@ -30,7 +30,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
   useEffect(() => {
     // 自動取得目前程式執行的真實 Origin
-    setCurrentOrigin(window.location.origin);
+    const origin = window.location.origin;
+    setCurrentOrigin(origin);
 
     const initializeGoogleSignIn = () => {
       if ((window as any).google) {
@@ -55,7 +56,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             error_callback: (err: any) => {
               console.error("Google Auth Error:", err);
               if (err.type === "origin_mismatch") {
-                setError("網域不匹配：請檢查 Google Console 設定。");
+                setError("網域不匹配：請將下方網址加入 Google Console。");
               }
             }
           });
@@ -95,6 +96,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
     setTimeout(() => { if (btn) btn.innerText = "複製網域"; }, 2000);
   };
 
+  const isVercel = currentOrigin.includes('vercel.app');
+
   return (
     <div className="min-h-screen bg-[#050a1a] flex items-center justify-center p-6 relative overflow-hidden">
       <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div>
@@ -115,7 +118,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           
           <h1 className="text-4xl font-black text-white mb-2 tracking-tighter text-center">GuardShift <span className="text-blue-500">Pro</span></h1>
           <p className="text-slate-400 text-center mb-8 font-medium text-sm">
-            專業保全排班系統 · 已串接正式登入
+            專業保全排班系統 · {isVercel ? 'Vercel 部署版' : '正式授權版'}
           </p>
 
           <div className="space-y-4 w-full flex flex-col items-center">
@@ -126,27 +129,35 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               <div className="w-full p-4 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-start gap-3 text-red-400 mb-4 animate-in shake duration-300">
                 <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
                 <div className="text-xs">
-                  <p className="font-bold mb-1">登入初始化失敗</p>
-                  <p className="opacity-80">通常是「已授權的 JavaScript 來源」填寫錯誤。請檢查下方診斷建議。</p>
+                  <p className="font-bold mb-1">登入設定需更新</p>
+                  <p className="opacity-80">{error}</p>
                 </div>
               </div>
             )}
 
             {/* 配置診斷助手 */}
             <div className="w-full mt-4 animate-in fade-in slide-in-from-bottom-2">
-              <div className="p-6 bg-blue-500/5 border border-white/5 rounded-3xl">
-                <div className="flex items-center gap-2 text-slate-500 mb-4">
-                  <Globe className="w-4 h-4" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">環境部署資訊</span>
+              <div className={`p-6 border rounded-3xl transition-colors ${isVercel ? 'bg-amber-500/5 border-amber-500/20' : 'bg-blue-500/5 border-white/5'}`}>
+                <div className="flex items-center gap-2 mb-4">
+                  {isVercel ? <Server className="w-4 h-4 text-amber-400" /> : <Globe className="w-4 h-4 text-slate-500" />}
+                  <span className={`text-[10px] font-black uppercase tracking-widest ${isVercel ? 'text-amber-400' : 'text-slate-500'}`}>
+                    {isVercel ? 'Vercel 環境偵測' : '環境部署資訊'}
+                  </span>
                 </div>
                 
                 <div className="space-y-4">
                   <div>
-                    <p className="text-[11px] text-slate-400 mb-2">
-                      如果無法看到 Google 登入按鈕，請在 Google Console 的來源網域填寫：
+                    <p className="text-[11px] text-slate-400 mb-2 leading-relaxed">
+                      {isVercel ? (
+                        <>您已將程式部署至 <strong className="text-white">Vercel</strong>，網址已變更。</>
+                      ) : (
+                        "如果無法看到 Google 登入按鈕，"
+                      )}
+                      請前往 Google Console 在「已授權的 JavaScript 來源」<span className="text-white font-bold underline decoration-blue-500">新增</span>以下網址：
                     </p>
-                    <div className="flex items-center gap-2 bg-black/40 p-3 rounded-xl border border-white/5 group">
-                      <code className="text-[10px] text-blue-300 truncate flex-1 font-mono font-bold">{currentOrigin}</code>
+                    <div className="flex items-center gap-2 bg-black/40 p-3 rounded-xl border border-white/5 group relative overflow-hidden">
+                       <div className={`absolute inset-y-0 left-0 w-1 ${isVercel ? 'bg-amber-500' : 'bg-blue-500'}`}></div>
+                      <code className="text-[10px] text-blue-300 truncate flex-1 font-mono font-bold pl-2">{currentOrigin}</code>
                       <button 
                         id="copy-btn"
                         onClick={() => copyToClipboard(currentOrigin)}
@@ -155,14 +166,17 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
                         複製網域
                       </button>
                     </div>
+                    <p className="text-[9px] text-slate-500 mt-2 italic flex items-center gap-1">
+                      <Info className="w-3 h-3" /> 修改後約需 5-10 分鐘才會生效
+                    </p>
                   </div>
 
                   <div className="pt-2 border-t border-white/5">
                     <button 
                       onClick={() => onLogin({ id: 'dev_user', name: '測試主管', email: 'demo@guardshift.pro', picture: 'https://ui-avatars.com/api/?name=Admin&background=000&color=fff' })}
-                      className="w-full text-slate-500 hover:text-white py-2 rounded-xl text-[10px] font-bold transition-all flex items-center justify-center gap-2"
+                      className="w-full text-slate-500 hover:text-white py-2 rounded-xl text-[10px] font-bold transition-all flex items-center justify-center gap-2 group"
                     >
-                      暫時使用測試模式進入 <ArrowRight className="w-3 h-3" />
+                      暫時使用測試模式進入 <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
                     </button>
                   </div>
                 </div>
