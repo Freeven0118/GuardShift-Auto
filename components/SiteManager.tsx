@@ -64,14 +64,14 @@ const PostRow: React.FC<{
 
   return (
     <div 
-        className={`group relative p-5 rounded-2xl border-2 mb-4 transition-all duration-300 shadow-sm hover:shadow-md ${style.bg} ${style.border}`}
+        className={`group relative p-4 lg:p-5 rounded-2xl border-2 mb-4 transition-all duration-300 shadow-sm hover:shadow-md ${style.bg} ${style.border}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
     >
         <div className="flex flex-col xl:flex-row gap-5 items-start xl:items-center">
             
-            {/* Post Name Section */}
-            <div className="flex items-center gap-4 flex-1 w-full xl:w-auto min-w-[280px]">
+            {/* Post Name Section - Full Width on Mobile */}
+            <div className="flex items-center gap-4 flex-1 w-full xl:w-auto xl:min-w-[280px]">
                 <div className={`p-3 rounded-xl shrink-0 shadow-sm ${style.iconBg} ${style.iconColor}`}>
                     {isDay ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
                 </div>
@@ -87,8 +87,8 @@ const PostRow: React.FC<{
                 </div>
             </div>
 
-            {/* Staff Name Section */}
-            <div className="flex-1 w-full xl:w-auto min-w-[280px]">
+            {/* Staff Name Section - Full Width on Mobile */}
+            <div className="flex-1 w-full xl:w-auto xl:min-w-[280px]">
                  <label className={`text-xs font-black uppercase tracking-wider mb-1 block ${style.label}`}>固定人員</label>
                  <div className={`relative flex items-center rounded-xl px-3 py-1 border border-transparent focus-within:bg-white focus-within:shadow-sm focus-within:border-slate-200 transition-all ${style.staffBg}`}>
                     <input 
@@ -110,13 +110,13 @@ const PostRow: React.FC<{
                  </div>
             </div>
 
-            {/* Actions - Animated Buttons */}
+            {/* Actions - Animated Buttons - Full Width on Mobile */}
             <div className="flex items-center gap-3 self-end xl:self-center w-full xl:w-auto justify-end mt-2 xl:mt-0">
                  <button
                     type="button"
                     onClick={handleSave}
                     disabled={!hasChanges}
-                    className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 whitespace-nowrap shadow-sm ${
+                    className={`flex-1 xl:flex-none px-6 py-3 xl:py-2.5 rounded-xl text-sm font-bold transition-all duration-200 whitespace-nowrap shadow-sm flex justify-center ${
                         !hasChanges 
                         ? 'bg-slate-200 text-slate-400 cursor-default' 
                         : 'bg-green-600 text-white hover:bg-green-700 hover:-translate-y-0.5 hover:shadow-lg active:scale-95'
@@ -132,7 +132,7 @@ const PostRow: React.FC<{
                         e.stopPropagation(); 
                         onDeletePost(post.id);
                     }}
-                    className="flex items-center gap-2 px-5 py-2.5 bg-white border border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 rounded-xl text-sm font-bold transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-95 whitespace-nowrap"
+                    className="flex-1 xl:flex-none flex items-center justify-center gap-2 px-5 py-3 xl:py-2.5 bg-white border border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 rounded-xl text-sm font-bold transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-95 whitespace-nowrap"
                     title="刪除"
                 >
                     <Trash2 className="w-4 h-4" />
@@ -177,31 +177,31 @@ const SiteDetailPanel: React.FC<{
       
       {/* Header Section */}
       <div className="flex flex-col xl:flex-row justify-between items-start xl:items-start mb-8 pb-6 border-b border-slate-100 gap-6">
-        <div className="flex-1 space-y-3">
+        <div className="flex-1 space-y-3 w-full">
              <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-widest">
                 <MapPin className="w-3.5 h-3.5" />
                 <span>Site Configuration</span>
              </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 w-full">
                 {isEditingTitle ? (
-                    <div className="flex items-center gap-3 animate-in fade-in zoom-in-95 origin-left">
+                    <div className="flex items-center gap-3 animate-in fade-in zoom-in-95 origin-left w-full">
                         <input 
                             type="text" 
                             value={titleInput}
                             onChange={(e) => setTitleInput(e.target.value)}
-                            className="text-4xl font-black text-slate-800 border-b-2 border-blue-500 focus:outline-none bg-transparent min-w-[200px] pb-1"
+                            className="text-3xl lg:text-4xl font-black text-slate-800 border-b-2 border-blue-500 focus:outline-none bg-transparent min-w-[200px] w-full pb-1"
                             autoFocus
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter') handleTitleSave();
                                 if (e.key === 'Escape') setIsEditingTitle(false);
                             }}
                         />
-                        <button onClick={handleTitleSave} className="p-2 bg-green-100 text-green-700 rounded-full hover:bg-green-200 active:scale-95 transition"><Check className="w-5 h-5" /></button>
+                        <button onClick={handleTitleSave} className="p-2 bg-green-100 text-green-700 rounded-full hover:bg-green-200 active:scale-95 transition shrink-0"><Check className="w-5 h-5" /></button>
                     </div>
                 ) : (
                     <div className="group flex items-center gap-4 cursor-pointer" onClick={() => setIsEditingTitle(true)}>
-                         <h3 className="font-black text-slate-800 text-4xl tracking-tight hover:text-blue-600 transition-colors">{site.name}</h3>
+                         <h3 className="font-black text-slate-800 text-3xl lg:text-4xl tracking-tight hover:text-blue-600 transition-colors">{site.name}</h3>
                          <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 opacity-0 group-hover:opacity-100 transition-all transform translate-x-[-10px] group-hover:translate-x-0">
                              <Pencil className="w-4 h-4" />
                          </div>
@@ -217,7 +217,7 @@ const SiteDetailPanel: React.FC<{
               e.stopPropagation();
               onDeleteSite(site.id);
           }}
-          className="flex items-center gap-2 px-5 py-3 rounded-xl text-white bg-red-600 hover:bg-red-700 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 text-sm font-bold active:scale-95"
+          className="flex items-center gap-2 px-5 py-3 rounded-xl text-white bg-red-600 hover:bg-red-700 shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200 text-sm font-bold active:scale-95 whitespace-nowrap self-end xl:self-start"
         >
           <Trash2 className="w-4 h-4" />
           <span>刪除案場</span>
@@ -259,7 +259,7 @@ const SiteDetailPanel: React.FC<{
         </div>
 
         {/* Add Post Action Area - Big Visible Buttons with Lift Animation */}
-        <div className="grid grid-cols-2 gap-6 mt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
             <button 
                 type="button"
                 onClick={() => onAddPost(site.id, ShiftType.Day)}
@@ -422,15 +422,15 @@ const SiteManager: React.FC<SiteManagerProps> = ({ sites, staff, onStateChange, 
   const activeSiteStaff = activeSite ? staff.filter(s => s.defaultSiteId === activeSite.id) : [];
 
   return (
-    <div className="bg-white rounded-[2rem] shadow-2xl shadow-slate-200/50 border border-white overflow-hidden flex flex-col lg:flex-row min-h-[750px]">
+    <div className="bg-white rounded-[2rem] shadow-2xl shadow-slate-200/50 border border-white overflow-hidden flex flex-col lg:flex-row min-h-[auto] lg:min-h-[750px]">
       
-      {/* LEFT SIDEBAR */}
-      <div className="w-full lg:w-80 bg-slate-50 border-r border-slate-100 flex flex-col z-0">
+      {/* LEFT SIDEBAR - Reordered for Mobile (Top) / Desktop (Left) */}
+      <div className="w-full lg:w-80 bg-slate-50 border-r border-slate-100 flex flex-col z-0 max-h-[400px] lg:max-h-none">
           
           {/* Sidebar Header */}
-          <div className="p-6 pb-4 bg-slate-50">
-              <div className="flex items-center justify-between mb-6">
-                 <h2 className="text-xl font-black text-slate-800 flex items-center gap-2 tracking-tight">
+          <div className="p-4 lg:p-6 pb-2 lg:pb-4 bg-slate-50 sticky top-0 z-10">
+              <div className="flex items-center justify-between mb-4 lg:mb-6">
+                 <h2 className="text-lg lg:text-xl font-black text-slate-800 flex items-center gap-2 tracking-tight">
                     案場列表
                  </h2>
                  <span className="text-xs font-bold text-slate-400 bg-white px-2.5 py-1 rounded-full border border-slate-200 shadow-sm">{sites.length}</span>
@@ -472,7 +472,7 @@ const SiteManager: React.FC<SiteManagerProps> = ({ sites, staff, onStateChange, 
           </div>
 
           {/* Site List */}
-          <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-1 scrollbar-thin scrollbar-thumb-slate-200">
+          <div className="flex-1 overflow-y-auto px-4 pb-4 space-y-1 scrollbar-thin scrollbar-thumb-slate-200 h-[200px] lg:h-auto">
               {filteredSites.length > 0 ? (
                   filteredSites.map(site => {
                     const postCount = (site.posts || []).length;
@@ -524,7 +524,7 @@ const SiteManager: React.FC<SiteManagerProps> = ({ sites, staff, onStateChange, 
       </div>
 
       {/* RIGHT PANEL: DETAILS */}
-      <div className="flex-1 p-8 lg:p-12 bg-white min-h-[600px] z-10 relative">
+      <div className="flex-1 p-4 lg:p-12 bg-white min-h-[600px] z-10 relative">
           {activeSite ? (
             <SiteDetailPanel 
               // FORCE REMOUNT on ID change OR Post Count Change
