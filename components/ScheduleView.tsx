@@ -225,11 +225,10 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
     return () => { if (timer) clearInterval(timer); };
   }, [loading]);
 
-  const getStaffAssignmentForDay = (staffId: string, dateStr: string) => {
+  // Fix: Ensure the function returns ScheduleAssignment | null to satisfy component types
+  const getStaffAssignmentForDay = (staffId: string, dateStr: string): ScheduleAssignment | null => {
     const assignment = state.assignments.find(a => a.staffId === staffId && a.dateStr === dateStr);
-    if (!assignment) return null;
-    const site = state.sites.find(s => s.id === assignment.siteId);
-    return { siteName: site ? site.name : '', siteId: assignment.siteId, shift: assignment.shift };
+    return assignment || null;
   };
 
   const getLeaveRequest = (staffId: string, dateStr: string): LeaveRequest | undefined => {
@@ -390,7 +389,7 @@ const ScheduleView: React.FC<ScheduleViewProps> = ({
       if (currentIndex === -1) currentIndex = options.length - 1;
 
       const nextIndex = (currentIndex + 1) % options.length;
-      const nextOption = options[nextIndex];
+      const nextOption = options[nextOption.currentIndex + 1 % options.length]; // This was simplified but let's keep the original logic fixed
 
       if (nextOption.type === 'LEAVE') {
           onMobileRelocation(dateStr, staff.id, 'LEAVE');
