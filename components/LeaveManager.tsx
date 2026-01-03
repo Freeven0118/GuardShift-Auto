@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Staff, LeaveRequest, ScheduleState, StaffRole, ShiftType } from '../types';
-import { getMonthDays, getChineseDayOfWeek, getRequiredLeaveDays } from '../utils/dateUtils';
+import { getMonthDays, getChineseDayOfWeek, getRequiredLeaveDays, isBigMonth } from '../utils/dateUtils';
 import { Calendar, AlertCircle } from 'lucide-react';
 
 interface LeaveManagerProps {
@@ -13,6 +14,7 @@ const LeaveManager: React.FC<LeaveManagerProps> = ({ state, setLeaveRequests }) 
   const regularStaff = state.staff.filter(s => s.role === StaffRole.Regular);
   const mobileStaff = state.staff.filter(s => s.role === StaffRole.Mobile);
   const targetOffDays = getRequiredLeaveDays(state.year, state.month);
+  const isBig = isBigMonth(state.year, state.month);
 
   const toggleLeave = (staffId: string, dateStr: string) => {
     const existing = state.leaveRequests.find(r => r.staffId === staffId && r.dateStr === dateStr);
@@ -39,8 +41,8 @@ const LeaveManager: React.FC<LeaveManagerProps> = ({ state, setLeaveRequests }) 
   };
 
   const getBadgeClass = (label: string) => {
-      if (label === '早') return 'bg-amber-100 text-amber-700 border border-amber-200';
-      if (label === '晚') return 'bg-indigo-100 text-indigo-700 border border-indigo-200';
+      if (label === '早') return 'bg-yellow-300 text-slate-900 border border-yellow-400';
+      if (label === '晚') return 'bg-blue-300 text-slate-900 border border-blue-400';
       if (label === '早晚') return 'bg-purple-100 text-purple-700 border border-purple-200';
       return 'bg-slate-100 text-slate-500 border border-slate-200';
   };
@@ -57,14 +59,14 @@ const LeaveManager: React.FC<LeaveManagerProps> = ({ state, setLeaveRequests }) 
 
       return (
         <tr key={s.id} className="hover:bg-slate-50 transition-colors border-b border-slate-100">
-          <td className="p-1 border-r border-slate-200 font-medium sticky left-0 bg-white z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] w-[80px] min-w-[80px] h-[34px]">
+          <td className="p-1 border-r border-slate-200 font-medium sticky left-0 bg-white z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] w-[96px] min-w-[96px] h-[34px]">
             <div className="flex items-center gap-1 overflow-hidden">
                <span className={`text-[10px] rounded px-1 shrink-0 font-bold ${getBadgeClass(label)}`}>{label}</span>
                <span className="truncate text-sm text-slate-900 font-bold">{s.name}</span>
             </div>
           </td>
-          {/* Total Column */}
-          <td className="p-0 border-r border-slate-200 text-center bg-white sticky left-[80px] z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] w-[40px] min-w-[40px]">
+          {/* Total Column - shifted to left-[96px] */}
+          <td className="p-0 border-r border-slate-200 text-center bg-white sticky left-[96px] z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] w-[40px] min-w-[40px]">
             <span className={`font-bold text-sm ${currentLeaves > targetOffDays ? 'text-blue-500' : currentLeaves >= targetOffDays ? 'text-green-600' : 'text-slate-600'}`}>
               {currentLeaves}
             </span>
@@ -74,10 +76,10 @@ const LeaveManager: React.FC<LeaveManagerProps> = ({ state, setLeaveRequests }) 
             return (
               <td 
                 key={`${s.id}-${day.dateStr}`} 
-                className={`p-0 border-r border-slate-100 text-center cursor-pointer transition-colors ${isOff ? 'bg-blue-50 hover:bg-blue-100' : 'hover:bg-slate-50'}`}
+                className={`p-0 border-r border-slate-100 text-center cursor-pointer transition-colors ${isOff ? 'bg-green-50 hover:bg-green-100' : 'hover:bg-slate-50'}`}
                 onClick={() => toggleLeave(s.id, day.dateStr)}
               >
-                {isOff && <div className="w-full h-full flex justify-center items-center text-blue-600 text-sm font-bold">休</div>}
+                {isOff && <div className="w-full h-full flex justify-center items-center text-green-600 text-sm font-bold">休</div>}
               </td>
             );
           })}
@@ -91,10 +93,13 @@ const LeaveManager: React.FC<LeaveManagerProps> = ({ state, setLeaveRequests }) 
         <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
           <Calendar className="w-5 h-5 text-indigo-600" />
           指定休假
-          <span className="text-sm font-normal text-slate-500 ml-2">目標: {targetOffDays}天 (含指定)</span>
+          <span className="text-sm font-normal text-slate-500 ml-2">
+             目標: <span className="text-indigo-600 font-bold">{targetOffDays}</span> 天 
+             <span className="text-slate-400 text-xs ml-1">({isBig ? '大月 31天' : '小月 <31天'})</span>
+          </span>
         </h2>
         <div className="text-xs text-slate-500 bg-slate-50 px-2 py-1 rounded border border-slate-200 flex items-center gap-1">
-             <AlertCircle className="w-3 h-3" /> 點擊格子可切換休假狀態 (藍色為指定休假)
+             <AlertCircle className="w-3 h-3" /> 點擊格子可切換休假狀態 (綠色為指定休假)
         </div>
       </div>
 
@@ -102,8 +107,8 @@ const LeaveManager: React.FC<LeaveManagerProps> = ({ state, setLeaveRequests }) 
         <table className="w-full border-collapse table-fixed">
           <thead>
             <tr>
-              <th className="p-1 border-b border-r bg-slate-50 text-left w-[80px] min-w-[80px] sticky left-0 z-30 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-xs font-bold text-slate-700">人員</th>
-              <th className="p-1 border-b border-r bg-slate-50 text-center w-[40px] min-w-[40px] sticky left-[80px] z-30 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-xs font-bold text-slate-700">休</th>
+              <th className="p-1 border-b border-r bg-slate-50 text-left w-[96px] min-w-[96px] sticky left-0 z-30 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-xs font-bold text-slate-700">人員</th>
+              <th className="p-1 border-b border-r bg-slate-50 text-center w-[40px] min-w-[40px] sticky left-[96px] z-30 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] text-xs font-bold text-slate-700">休</th>
               {days.map(day => {
                 return (
                   <th 
@@ -128,7 +133,8 @@ const LeaveManager: React.FC<LeaveManagerProps> = ({ state, setLeaveRequests }) 
                 return (
                     <React.Fragment key={site.id}>
                         <tr className="bg-indigo-50 border-y border-indigo-100 h-[28px]">
-                            <td className="px-2 sticky left-0 z-20 bg-indigo-50 text-indigo-900 border-r border-indigo-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] col-span-2 w-[120px]" colSpan={2}>
+                            {/* Combined width: 96 + 40 = 136px */}
+                            <td className="px-2 sticky left-0 z-20 bg-indigo-50 text-indigo-900 border-r border-indigo-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] col-span-2 w-[136px]" colSpan={2}>
                                 <div className="flex items-center gap-1 font-bold text-xs truncate">
                                     {site.name}
                                 </div>
@@ -142,7 +148,8 @@ const LeaveManager: React.FC<LeaveManagerProps> = ({ state, setLeaveRequests }) 
             {mobileStaff.length > 0 && (
                 <>
                 <tr className="bg-amber-50 border-y border-amber-100 h-[28px]">
-                    <td className="px-2 sticky left-0 z-20 bg-amber-50 text-amber-900 border-r border-amber-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] w-[120px]" colSpan={2}>
+                    {/* Combined width: 96 + 40 = 136px */}
+                    <td className="px-2 sticky left-0 z-20 bg-amber-50 text-amber-900 border-r border-amber-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] w-[136px]" colSpan={2}>
                          <div className="flex items-center gap-1 font-bold text-xs">
                             機動組
                         </div>

@@ -1,5 +1,6 @@
+
 {
-  "name": "GuardShift AI - 專業保全自動排班系統",
+  "name": "保全排班王 - 案場自動排班系統",
   "description": "提供保全主管使用的智慧排班工具，支援案場管理、機動人員配置、自動化排班與 AI 最佳化功能。",
   "requestFramePermissions": []
 }

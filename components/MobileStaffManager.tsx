@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { Staff, StaffRole, Site, ShiftType } from '../types';
-import { Plus, Trash2, Truck, Sun, Moon, Check } from 'lucide-react';
+import { Plus, Truck, Sun, Moon, Check, Trash2 } from 'lucide-react';
 
 const generateId = () => Math.random().toString(36).substr(2, 9);
 
@@ -105,11 +106,11 @@ const MobileStaffRow: React.FC<{
   const isAllSites = siteIds.length === 0;
 
   return (
-    <div className="bg-amber-50 border border-amber-100 p-5 rounded-lg flex flex-col xl:flex-row gap-5 items-start xl:items-center justify-between">
+    <div className="bg-amber-50 border border-amber-100 p-5 rounded-lg flex flex-col xl:flex-row gap-5 items-start xl:items-center justify-between shadow-sm hover:shadow-md transition-shadow duration-300">
         
-        {/* Name Input */}
-        <div className="flex items-center gap-3 min-w-[180px]">
-          <div className="bg-amber-200 text-amber-800 p-3 rounded-full shrink-0">
+        {/* Name Input - Widened width for better aesthetics */}
+        <div className="flex items-center gap-3 w-full sm:w-auto min-w-[240px]">
+          <div className="bg-amber-200 text-amber-800 p-3 rounded-full shrink-0 shadow-sm">
             <Truck className="w-5 h-5" />
           </div>
           <input
@@ -117,7 +118,7 @@ const MobileStaffRow: React.FC<{
             value={name}
             onChange={handleNameChange}
             placeholder="姓名"
-            className="font-bold text-slate-700 text-xl bg-transparent border-b-2 border-amber-300 focus:border-amber-500 focus:outline-none w-full xl:w-[140px]"
+            className="font-bold text-slate-700 text-xl bg-transparent border-b-2 border-amber-300 focus:border-amber-500 focus:outline-none w-full sm:w-[180px]"
           />
         </div>
 
@@ -128,10 +129,10 @@ const MobileStaffRow: React.FC<{
                 <div className="flex gap-2">
                   <button
                     onClick={() => toggleShift(ShiftType.Day)}
-                    className={`flex-1 px-3 py-2 text-sm font-bold rounded-md transition-all flex items-center justify-center gap-1 border ${
+                    className={`flex-1 px-3 py-2 text-sm font-bold rounded-md transition-all duration-200 flex items-center justify-center gap-1 border hover:-translate-y-0.5 active:scale-95 ${
                       shifts.includes(ShiftType.Day) 
-                        ? 'bg-amber-500 border-amber-600 text-white shadow-sm' // Selected: Deep Orange
-                        : 'bg-slate-100 border-slate-200 text-slate-400 hover:bg-slate-200' // Unselected: Light Gray
+                        ? 'bg-yellow-300 border-yellow-400 text-slate-900 shadow-md' // Selected
+                        : 'bg-slate-100 border-slate-200 text-slate-400 hover:bg-slate-200 shadow-sm' // Unselected
                     }`}
                   >
                     {shifts.includes(ShiftType.Day) && <Check className="w-4 h-4" />}
@@ -139,10 +140,10 @@ const MobileStaffRow: React.FC<{
                   </button>
                   <button
                     onClick={() => toggleShift(ShiftType.Night)}
-                    className={`flex-1 px-3 py-2 text-sm font-bold rounded-md transition-all flex items-center justify-center gap-1 border ${
+                    className={`flex-1 px-3 py-2 text-sm font-bold rounded-md transition-all duration-200 flex items-center justify-center gap-1 border hover:-translate-y-0.5 active:scale-95 ${
                       shifts.includes(ShiftType.Night) 
-                        ? 'bg-indigo-900 border-indigo-950 text-white shadow-sm' // Selected: Deep Blue (Night)
-                        : 'bg-slate-100 border-slate-200 text-slate-400 hover:bg-slate-200' // Unselected: Light Gray
+                        ? 'bg-blue-300 border-blue-400 text-slate-900 shadow-md' // Selected
+                        : 'bg-slate-100 border-slate-200 text-slate-400 hover:bg-slate-200 shadow-sm' // Unselected
                     }`}
                   >
                     {shifts.includes(ShiftType.Night) && <Check className="w-4 h-4" />}
@@ -157,7 +158,7 @@ const MobileStaffRow: React.FC<{
                 <div className="flex flex-wrap gap-2">
                     <button 
                         onClick={setAllSites}
-                        className={`px-3 py-1.5 rounded text-sm font-medium border transition-colors ${isAllSites ? 'bg-slate-700 text-white border-slate-700' : 'bg-white border-slate-300 text-slate-500 hover:border-slate-500'}`}
+                        className={`px-3 py-1.5 rounded text-sm font-medium border transition-all duration-200 hover:-translate-y-0.5 active:scale-95 ${isAllSites ? 'bg-slate-700 text-white border-slate-700 shadow-md' : 'bg-white border-slate-300 text-slate-500 hover:border-slate-500 shadow-sm'}`}
                     >
                         全部
                     </button>
@@ -167,7 +168,7 @@ const MobileStaffRow: React.FC<{
                             <button
                                 key={site.id}
                                 onClick={() => toggleSite(site.id)}
-                                className={`px-3 py-1.5 rounded text-sm font-medium border transition-colors ${isSelected ? 'bg-blue-600 text-white border-blue-600' : 'bg-white border-slate-300 text-slate-500 hover:border-slate-500'}`}
+                                className={`px-3 py-1.5 rounded text-sm font-medium border transition-all duration-200 hover:-translate-y-0.5 active:scale-95 ${isSelected ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white border-slate-300 text-slate-500 hover:border-slate-500 shadow-sm'}`}
                             >
                                 {site.name}
                             </button>
@@ -182,16 +183,20 @@ const MobileStaffRow: React.FC<{
              <button
                 onClick={handleConfirm}
                 disabled={!isModified && isSaved}
-                className={`px-4 py-2 rounded text-base font-bold transition-all whitespace-nowrap ${
+                className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200 whitespace-nowrap shadow-sm ${
                     (!isModified && isSaved) 
                     ? 'bg-slate-200 text-slate-400 cursor-default' 
-                    : 'bg-green-600 text-white hover:bg-green-700 shadow-md'
+                    : 'bg-green-600 text-white hover:bg-green-700 hover:-translate-y-0.5 hover:shadow-lg active:scale-95'
                 }`}
             >
                 {(!isModified && isSaved) ? '已確認' : '確認'}
             </button>
-            <button onClick={() => onRemove(staffMember.id)} className="text-slate-400 hover:text-red-500 p-2 rounded hover:bg-red-50 transition">
-              <Trash2 className="w-6 h-6" />
+            <button 
+                onClick={() => onRemove(staffMember.id)} 
+                className="flex items-center gap-2 px-5 py-2.5 bg-white border border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 rounded-xl text-sm font-bold transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 active:scale-95 whitespace-nowrap"
+            >
+              <Trash2 className="w-4 h-4" />
+              刪除
             </button>
         </div>
     </div>
@@ -250,7 +255,7 @@ const MobileStaffManager: React.FC<MobileStaffManagerProps> = ({ staff, sites, s
         />
         <button 
           onClick={addMobileStaff}
-          className="bg-accent text-white px-6 py-3 rounded-lg hover:bg-amber-600 transition flex items-center gap-2 font-bold text-lg"
+          className="bg-accent text-white px-6 py-3 rounded-lg hover:bg-amber-600 transition-all duration-200 flex items-center gap-2 font-bold text-lg shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-95"
         >
           <Plus className="w-5 h-5" /> 新增
         </button>

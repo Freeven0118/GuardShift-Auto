@@ -1,5 +1,5 @@
 {
-  "name": "guardshift-ai---專業保全自動排班系統",
+  "name": "保全排班王---案場自動排班系統",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -14,7 +14,8 @@
     "react-dom": "^19.2.3",
     "lucide-react": "^0.562.0",
     "react": "^19.2.3",
-    "uuid": "^13.0.0"
+    "uuid": "^13.0.0",
+    "html2canvas": "1.4.1"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

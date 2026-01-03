@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GuardShift AI - 保全排班大師</title>
+    <title>保全排班王 - 案場自動排班系統</title>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -15,6 +15,15 @@
               primary: '#1e40af', 
               secondary: '#64748b',
               accent: '#f59e0b',
+            },
+            animation: {
+              'flash-red': 'flash-red-white 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            },
+            keyframes: {
+              'flash-red-white': {
+                '0%, 100%': { backgroundColor: '#fee2e2', color: '#dc2626', borderColor: '#fca5a5' }, // 淺紅底, 深紅字
+                '50%': { backgroundColor: '#ffffff', color: '#ef4444', borderColor: '#fee2e2' }, // 白底, 紅字
+              }
             }
           }
         }
@@ -29,7 +38,8 @@
     "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
     "react/": "https://esm.sh/react@^19.2.3/",
     "react": "https://esm.sh/react@^19.2.3",
-    "uuid": "https://esm.sh/uuid@^13.0.0"
+    "uuid": "https://esm.sh/uuid@^13.0.0",
+    "html2canvas": "https://esm.sh/html2canvas@1.4.1"
   }
 }
 </script>

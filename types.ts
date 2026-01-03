@@ -16,12 +16,19 @@ export interface User {
   picture?: string;
 }
 
+export interface SitePost {
+  id: string;
+  name: string; // e.g., "正班", "特勤", "車道"
+  shift: ShiftType;
+}
+
 export interface Staff {
   id: string;
   name: string;
   role: StaffRole;
   defaultSiteId?: string;
   defaultShift?: ShiftType; 
+  defaultPostId?: string; // New: Link to specific post
   allowedShifts?: ShiftType[];
   allowedSiteIds?: string[];
 }
@@ -29,7 +36,8 @@ export interface Staff {
 export interface Site {
   id: string;
   name: string;
-  requiredStaffPerShift: number;
+  requiredStaffPerShift: number; // Keep for legacy, but posts.length is now more accurate
+  posts: SitePost[]; // New: List of defined positions
 }
 
 export interface LeaveRequest {
