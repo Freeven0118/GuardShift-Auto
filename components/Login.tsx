@@ -11,7 +11,6 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
   const googleBtnRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
 
-  // 已填入您提供的正式 Google Client ID
   const CLIENT_ID = "1090811649908-ejqk8otbcs7lj0umno974s5p05lteocd.apps.googleusercontent.com"; 
 
   const parseJwt = (token: string) => {
@@ -47,7 +46,6 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               }
             },
             auto_select: false,
-            // 處理錯誤
             error_callback: (err: any) => {
               console.error("Google Auth Error:", err);
               if (err.type === "origin_mismatch") {
@@ -58,7 +56,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
 
           if (googleBtnRef.current) {
             (window as any).google.accounts.id.renderButton(googleBtnRef.current, {
-              theme: "filled_black", // 改為黑色風格，做為次要按鈕
+              theme: "filled_black",
               size: "large",
               width: "320",
               text: "signin_with",
@@ -111,14 +109,12 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             </div>
           </div>
           
-          <h1 className="text-4xl font-black text-white mb-2 tracking-tighter text-center">GuardShift <span className="text-blue-500">Pro</span></h1>
-          <p className="text-slate-400 text-center mb-8 font-medium text-sm">
-            專業保全排班系統
+          <h1 className="text-4xl font-black text-white mb-2 tracking-tighter text-center">保全排班王</h1>
+          <p className="text-[#ffffff] text-lg text-center mb-8 font-medium">
+            案場自動排班系統
           </p>
 
           <div className="space-y-5 w-full flex flex-col items-center">
-            
-            {/* Primary Guest Button */}
              <button 
               onClick={handleGuestLogin}
               className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-4 px-6 rounded-2xl font-black text-lg shadow-xl shadow-blue-500/20 flex items-center justify-center gap-2 transition-all active:scale-[0.98] group relative overflow-hidden ring-4 ring-blue-500/10"
@@ -135,10 +131,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
               <div className="h-[1px] bg-white/5 flex-1"></div>
             </div>
 
-            {/* Google Button Container */}
             <div className="w-full flex flex-col items-center gap-2 opacity-80 hover:opacity-100 transition-opacity">
                 <div ref={googleBtnRef} className="w-full flex justify-center min-h-[50px]"></div>
-                {/* 錯誤提示說明 */}
                 <p className="text-slate-500 text-[10px] text-center max-w-[280px] leading-relaxed">
                     * 若 Google 登入出現 <span className="text-red-400 font-mono">400 origin_mismatch</span> 錯誤，代表目前的預覽網址未被授權。請直接使用上方藍色按鈕即可。
                 </p>

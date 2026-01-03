@@ -30,7 +30,6 @@ function App() {
   });
 
   const exportRef = useRef<HTMLDivElement>(null);
-
   const getStorageKey = (uid: string) => `guardShift_v3_${uid}`;
 
   const handleLogin = (newUser: User) => {
@@ -173,6 +172,7 @@ function App() {
         const previousMobileAssignment = prev.assignments.find(a => a.staffId === mobileStaffId && a.dateStr === dateStr);
         newAssignments = newAssignments.filter(a => !(a.staffId === mobileStaffId && a.dateStr === dateStr));
         newLeaveRequests = newLeaveRequests.filter(r => !(r.staffId === mobileStaffId && r.dateStr === dateStr));
+
         if (previousMobileAssignment && action !== 'EMPTY') {
             const { siteId: oldSiteId, shift: oldShift } = previousMobileAssignment;
             const regularOwners = prev.staff.filter(s => s.role === StaffRole.Regular && s.defaultSiteId === oldSiteId && s.defaultShift === oldShift);
@@ -180,21 +180,23 @@ function App() {
                 const isDesignated = prev.leaveRequests.some(r => r.staffId === owner.id && r.dateStr === dateStr && r.isDesignated);
                 if (!isDesignated) {
                     newLeaveRequests = newLeaveRequests.filter(r => !(r.staffId === owner.id && r.dateStr === dateStr));
-                    if (!newAssignments.some(a => a.staffId === owner.id && a.dateStr === dateStr)) {
-                        newAssignments.push({ dateStr: dateStr, siteId: oldSiteId, shift: oldShift, staffId: owner.id });
-                    }
+                    const isBackAtWork = newAssignments.some(a => a.staffId === owner.id && a.dateStr === dateStr);
+                    if (!isBackAtWork) { newAssignments.push({ dateStr: dateStr, siteId: oldSiteId, shift: oldShift, staffId: owner.id }); }
                 }
             });
         }
         if (action === 'ASSIGN' && targetSiteId && targetShift) {
-            const targetOwners = prev.staff.filter(s => s.role === StaffRole.Regular && s.defaultSiteId === targetSiteId && s.defaultShift === targetShift);
+             const targetOwners = prev.staff.filter(s => s.role === StaffRole.Regular && s.defaultSiteId === targetSiteId && s.defaultShift === targetShift);
             targetOwners.forEach(owner => {
-                if (!newLeaveRequests.some(r => r.staffId === owner.id && r.dateStr === dateStr)) { newLeaveRequests.push({ staffId: owner.id, dateStr, isDesignated: false }); }
+                const alreadyOnLeave = newLeaveRequests.some(r => r.staffId === owner.id && r.dateStr === dateStr);
+                if (!alreadyOnLeave) { newLeaveRequests.push({ staffId: owner.id, dateStr, isDesignated: false }); }
                 newAssignments = newAssignments.filter(a => !(a.staffId === owner.id && a.dateStr === dateStr));
             });
             newAssignments = newAssignments.filter(a => !(a.siteId === targetSiteId && a.shift === targetShift && a.dateStr === dateStr));
             newAssignments.push({ dateStr, siteId: targetSiteId, shift: targetShift, staffId: mobileStaffId });
-        } else if (action === 'LEAVE') { newLeaveRequests.push({ staffId: mobileStaffId, dateStr, isDesignated: false }); }
+        } else if (action === 'LEAVE') {
+            newLeaveRequests.push({ staffId: mobileStaffId, dateStr, isDesignated: false });
+        }
         return { ...prev, assignments: newAssignments, leaveRequests: newLeaveRequests };
     });
   };
@@ -222,7 +224,8 @@ function App() {
       finalAssignments.forEach(asm => {
           const owner = state.staff.find(s => s.role === StaffRole.Regular && s.defaultSiteId === asm.siteId && s.defaultShift === asm.shift);
           if (owner && owner.id !== asm.staffId) {
-              if (!syncedLeaveRequests.some(r => r.staffId === owner.id && r.dateStr === asm.dateStr)) { syncedLeaveRequests.push({ staffId: owner.id, dateStr: asm.dateStr, isDesignated: false }); }
+              const exists = syncedLeaveRequests.some(r => r.staffId === owner.id && r.dateStr === asm.dateStr);
+              if (!exists) { syncedLeaveRequests.push({ staffId: owner.id, dateStr: asm.dateStr, isDesignated: false }); }
           }
       });
       setState(prev => ({ ...prev, assignments: finalAssignments, leaveRequests: syncedLeaveRequests }));
@@ -234,21 +237,12 @@ function App() {
       const element = exportRef.current;
       if (!element) return;
       try {
-          const canvas = await html2canvas(element, {
-              scale: 3, 
-              backgroundColor: '#ffffff',
-              logging: false,
-              useCORS: true,
-              scrollX: 0,
-              scrollY: 0,
-              width: element.offsetWidth, 
-              height: element.offsetHeight
-          });
+          const canvas = await html2canvas(element, { scale: 3, backgroundColor: '#ffffff', logging: false, useCORS: true, scrollX: 0, scrollY: 0, width: element.offsetWidth, height: element.offsetHeight });
           const link = document.createElement('a');
           link.download = `排班表_${state.year}_${state.month + 1}月.png`;
           link.href = canvas.toDataURL('image/png');
           link.click();
-      } catch (e) { console.error("Export failed", e); alert("圖片輸出失敗，請重試"); }
+      } catch (e) { alert("圖片輸出失敗，請重試"); }
   };
 
   const handleCopyText = () => {
@@ -283,7 +277,7 @@ function App() {
             <div className="bg-blue-600 p-2 rounded-xl">
                 <ShieldCheck className="w-6 h-6 text-white" />
             </div>
-            <h1 className="text-xl font-black tracking-tighter text-white">保全排班王</h1>
+            <h1 className="text-xl font-black tracking-tighter">保全排班王</h1>
           </div>
           
           <div className="flex items-center gap-2 sm:gap-4">
@@ -308,11 +302,11 @@ function App() {
       <div style={{ position: 'absolute', top: 0, left: '-20000px', width: 'max-content', visibility: 'visible', zIndex: -100 }}>
         <div ref={exportRef} className="p-10 bg-white">
             <div className="mb-6">
-                <h1 className="text-3xl font-black text-slate-800">保全排班王 - 案場排班表</h1>
+                <h1 className="text-3xl font-black text-slate-800">保全排班表</h1>
                 <p className="text-slate-500 font-bold mt-2">{state.year}年 {state.month + 1}月</p>
             </div>
             <ScheduleView state={state} loading={false} onGenerate={() => {}} onClear={() => {}} onClearDesignated={() => {}} onUpdateAssignment={() => {}} onToggleLeave={() => {}} onMobileRelocation={() => {}} apiKeySet={true} readOnly={true} isExporting={true} />
-            <div className="mt-4 flex gap-4 text-sm text-slate-400"><span>由 保全排班王 自動生成</span></div>
+            <div className="mt-4 flex gap-4 text-sm text-slate-400"><span>保全排班王 自動排班系統</span></div>
         </div>
       </div>
 
@@ -368,16 +362,14 @@ function App() {
                 <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
                     <div className="flex items-center gap-2 text-green-800 font-bold px-4 py-2 bg-green-50 rounded-lg"><CheckCircle2 className="w-5 h-5" /> <span>最終班表 (Read Only)</span></div>
                     <div className="flex items-center gap-3">
-                        <button onClick={handleCopyText} className="flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition-all active:scale-95 border border-slate-200"><Copy className="w-4 h-4" /><span className="hidden sm:inline">複製文字公告</span></button>
-                        <button onClick={handleDownloadImage} className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:shadow-xl transition-all active:scale-95"><ImageIcon className="w-4 h-4" /><span>下載班表圖片</span></button>
+                        <button onClick={handleCopyText} className="flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition-all active:scale-95 border border-slate-200"><Copy className="w-4 h-4" /> <span className="hidden sm:inline">複製文字公告</span></button>
+                        <button onClick={handleDownloadImage} className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:shadow-xl transition-all active:scale-95"><ImageIcon className="w-4 h-4" /> <span>下載班表圖片</span></button>
                     </div>
                 </div>
                 <div className="p-2 bg-white rounded-xl">
                     <ScheduleView state={state} loading={false} onGenerate={() => {}} onClear={() => {}} onClearDesignated={() => {}} onUpdateAssignment={() => {}} onToggleLeave={() => {}} onMobileRelocation={() => {}} apiKeySet={true} readOnly={true} />
                 </div>
-                <div className="flex justify-start pt-4">
-                    <button onClick={() => setCurrentStep(3)} className="bg-slate-200 text-slate-600 px-6 py-4 rounded-2xl font-bold hover:bg-slate-300 transition-all duration-200 active:scale-95 flex items-center gap-2"><ChevronLeft className="w-5 h-5" /> 返回修改</button>
-                </div>
+                <div className="flex justify-start pt-4"><button onClick={() => setCurrentStep(3)} className="bg-slate-200 text-slate-600 px-6 py-4 rounded-2xl font-bold hover:bg-slate-300 transition-all duration-200 active:scale-95 flex items-center gap-2"><ChevronLeft className="w-5 h-5" /> 返回修改</button></div>
             </div>
         )}
       </main>
