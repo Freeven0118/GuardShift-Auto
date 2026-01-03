@@ -359,17 +359,33 @@ function App() {
         )}
         {currentStep === 4 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-                    <div className="flex items-center gap-2 text-green-800 font-bold px-4 py-2 bg-green-50 rounded-lg"><CheckCircle2 className="w-5 h-5" /> <span>最終班表 (Read Only)</span></div>
-                    <div className="flex items-center gap-3">
-                        <button onClick={handleCopyText} className="flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition-all active:scale-95 border border-slate-200"><Copy className="w-4 h-4" /> <span className="hidden sm:inline">複製文字公告</span></button>
-                        <button onClick={handleDownloadImage} className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold shadow-lg shadow-blue-200 hover:shadow-xl transition-all active:scale-95"><ImageIcon className="w-4 h-4" /> <span>下載班表圖片</span></button>
-                    </div>
-                </div>
-                <div className="p-2 bg-white rounded-xl">
+                <div className="p-2 bg-white rounded-xl shadow-sm border border-slate-100">
                     <ScheduleView state={state} loading={false} onGenerate={() => {}} onClear={() => {}} onClearDesignated={() => {}} onUpdateAssignment={() => {}} onToggleLeave={() => {}} onMobileRelocation={() => {}} apiKeySet={true} readOnly={true} />
                 </div>
-                <div className="flex justify-start pt-4"><button onClick={() => setCurrentStep(3)} className="bg-slate-200 text-slate-600 px-6 py-4 rounded-2xl font-bold hover:bg-slate-300 transition-all duration-200 active:scale-95 flex items-center gap-2"><ChevronLeft className="w-5 h-5" /> 返回修改</button></div>
+                
+                {/* Export Action Section Moved to Bottom */}
+                <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-md">
+                    <div className="flex items-center gap-2 text-green-800 font-black px-4 py-2.5 bg-green-50 rounded-xl border border-green-100">
+                      <CheckCircle2 className="w-5 h-5" /> 
+                      <span>排班內容已確認</span>
+                    </div>
+                    <div className="flex items-center gap-3 w-full md:w-auto">
+                        <button onClick={handleCopyText} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-5 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold transition-all active:scale-95 border border-slate-200 shadow-sm">
+                          <Copy className="w-4 h-4" /> 
+                          <span>複製文字公告</span>
+                        </button>
+                        <button onClick={handleDownloadImage} className="flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-black shadow-lg shadow-blue-200 hover:shadow-xl transition-all active:scale-95">
+                          <ImageIcon className="w-5 h-5" /> 
+                          <span>下載班表圖片</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div className="flex justify-start pt-2">
+                  <button onClick={() => setCurrentStep(3)} className="bg-slate-200 text-slate-600 px-6 py-4 rounded-2xl font-bold hover:bg-slate-300 transition-all duration-200 active:scale-95 flex items-center gap-2">
+                    <ChevronLeft className="w-5 h-5" /> 返回修改
+                  </button>
+                </div>
             </div>
         )}
       </main>
