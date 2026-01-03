@@ -121,7 +121,8 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             >
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
               <Users className="w-5 h-5 relative z-10" />
-              <span className="relative z-10">不登入使用 \n(不儲存資料)</span>
+              <span className="relative z-10">不登入使用</span>
+               <span className="relative z-10">(不儲存資料)</span>
               <ArrowRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
             </button>
 
